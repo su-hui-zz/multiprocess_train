@@ -1,0 +1,11 @@
+train with multiprocess, enter"free -h" ,get "used" to much memory.
+
+经过笔者实验，目前有三种可靠的解决方式
+
+    1）.Dataloader里面不用cv2.imread进行读取图片，用cv2.imread还会带来一系列的不方便，比如不能结合torchvision进行数据增强，所以最好用PIL 里面的Image.open来读图片
+
+    2）.将DataLoader 里面的参变量num_workers设置为0，但会导致数据的读取很慢，拖慢整个模型的训练
+
+    3）.如果用了cv2.imread，也懒得改了，那就加两条语句，来关闭Opencv的多线程：cv2.setNumThreads(0)和cv2.ocl.setUseOpenCL(False)。加了这两条语句之后，并不影响模型的训练速度，根据笔者观察，速度相反还变快了，真神奇呀。
+
+    综上所述：如果遇到此问题，建议选择方法1和方法3来解决这个问题，因为不影响模型训练速度。
